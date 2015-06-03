@@ -4,7 +4,7 @@
 
     <groupId>de.zalando</groupId>
     <artifactId>jgroups-native-s3-ping</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.1.2</version>
 
     <name>JGroups native S3 ping</name>
     <description>A native (AWS SDK) implementation of the JGroups Discovery protocol based on an S3 bucket.</description>
