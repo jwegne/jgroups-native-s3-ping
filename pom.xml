@@ -30,8 +30,8 @@
         <connection>scm:git:git@github.com:zalando/jgroups-native-s3-ping.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/jgroups-native-s3-ping.git</developerConnection>
         <url>git@github.com:zalando/jgroups-native-s3-ping.git</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
-            <version>1.9.39</version>
+            <version>1.10.47</version>
         </dependency>
 
         <!-- testing -->
