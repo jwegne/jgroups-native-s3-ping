@@ -33,8 +33,8 @@ Based on tcp.xml but with new S3_PING.
 
     <de.zalando.jgroups.NATIVE_S3_PING
             regionName="eu-west-1"
-            bucketName="jgroups-s3-test"
-            bucketPrefix="jgroups"/>
+            bucketName="mapwikidev"
+            bucketPrefix="cluster"/>
 
     <MERGE3 min_interval="10000"
             max_interval="30000"/>

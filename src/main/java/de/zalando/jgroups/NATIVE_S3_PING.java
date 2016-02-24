@@ -13,6 +13,7 @@ import org.jgroups.logging.LogFactory;
 import org.jgroups.protocols.FILE_PING;
 import org.jgroups.protocols.PingData;
 import org.jgroups.util.Responses;
+import org.jgroups.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -204,7 +205,59 @@ public class NATIVE_S3_PING extends FILE_PING {
 
     @Override
     protected void remove(final String clustername, final Address addr) {
-        // our server can get killed all the time, don't depend on cleanup on shudown
+        if(clustername == null || addr == null) {
+            return;
+        }
+
+        String filename = addressToFilename(addr);
+        String key = getClusterPrefix(clustername) + filename;
+
+        try {
+            s3.deleteObject(new DeleteObjectRequest(bucketName, key));
+
+            if(log.isTraceEnabled()) {
+                log.trace("removing " + key);
+            }
+        } catch(Exception e) {
+            log.error(Util.getMessage("FailureRemovingData"), e);
+        }
+    }
+
+    @Override
+    protected void removeAll(String clustername) {
+        if(clustername == null) {
+            return;
+        }
+
+        final String clusterPrefix = getClusterPrefix(clustername);
+
+        try {
+            final ObjectListing objectListing = s3.listObjects(
+                new ListObjectsRequest()
+                    .withBucketName(bucketName)
+                    .withPrefix(clusterPrefix));
+
+            if (log.isTraceEnabled()) {
+                log.trace("got object listing, %d entries [%s]", objectListing.getObjectSummaries().size(), clusterPrefix);
+            }
+
+            for (final S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+                if (log.isTraceEnabled()) {
+                    log.trace("fetching data for object %s ...", summary.getKey());
+                }
+
+                try {
+                    s3.deleteObject(new DeleteObjectRequest(bucketName, summary.getKey()));
+                    if (log.isTraceEnabled()) {
+                        log.trace("removing %s/%s", summary.getKey());
+                    }
+                } catch(Throwable t) {
+                    log.error("failed deleting object %s/%s: %s", summary.getKey(), t);
+                }
+            }
+        } catch(Exception ex) {
+            log.error(Util.getMessage("FailedDeletingAllObjects"), ex);
+        }
     }
 
     public static void registerProtocolWithJGroups(short magicNumber) {
